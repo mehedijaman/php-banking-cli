@@ -1,5 +1,8 @@
 <?php namespace App;
 use App\Models\Customer;
+use App\Models\Deposit;
+use App\Models\Withdraw;
+use App\Models\Transfer;
 
 class Console{
     private string $customerEmail;
@@ -166,12 +169,71 @@ class Console{
 
     public function deposit(){
         $amount = (int) readline('Enter Amount:');
-        $customer = new Customer();
+        $deposit = new Deposit();
+
         try {
-            $customer->deposit($this->customerEmail, $amount);
+            $deposit->store($this->customerEmail, $amount);
             print "Deposit Successfull ".PHP_EOL;
         } catch (\Throwable $th) {
             print "Something went wrong".PHP_EOL;
         }
     }
+
+    public function withdraw(){
+        $amount = (int) readline('Enter Withdraw Amount:');
+        $withdraw = new Withdraw();
+
+        try {
+            $withdraw->store($this->customerEmail, $amount);
+            print 'Your withdraw has been successfully done.'.PHP_EOL;
+        } catch (\Throwable $th) {
+            print "Something went wrong";
+        }
+    }
+
+    public function transfer(){
+        $toAccount = readline('Enter Destination Account Email Address:');
+        $amount = (int) readline('Enter Transfer Amount:');
+
+        $transfer = new Transfer();
+        try {
+            $transfer->store($this->customerEmail, $toAccount, $amount);
+            print 'Transfer Completed !'.PHP_EOL;
+        } catch (\Throwable $th) {
+            print 'Transfer Failed !'.PHP_EOL;
+        }
+    }
+
+    public function viewDeposit(){    
+        $deposits = Deposit::fetch($this->customerEmail);
+        print "Deposit List: ".PHP_EOL;
+        foreach ($deposits as $deposit){
+            print $deposit['date'].' : '.$deposit['amount'].PHP_EOL;
+        }
+    }
+
+    public function viewWithdraw(){
+        $witdraws = Withdraw::fetch($this->customerEmail);
+        print "Withdraw List: ".PHP_EOL;
+        foreach ($witdraws as $witdraw){
+            print $witdraw['date'].' : '.$witdraw['amount'].PHP_EOL;
+        }
+    }
+
+    public function viewBalance(){
+        $totalDeposit = Deposit::total($this->customerEmail);
+        $totalWithdraw = Withdraw::total($this->customerEmail);
+
+        $balance = $totalDeposit - $totalWithdraw;
+
+        print "Balance : " . $balance.PHP_EOL;
+    }
+
+    public function logout(){
+        $this->customerEmail = '';
+        print "Successfully logged out".PHP_EOL;
+        $this->run();
+    }
+
+    
 }

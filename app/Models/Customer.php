@@ -39,20 +39,4 @@ class Customer{
 
         return true;
     }
-
-    public function deposit($email, $amount){
-        $data = [
-            'email' => $email,
-            'amount' => $amount
-        ];
-
-        try {
-            $this->fileDB->save('Deposit', $data);
-            return true;
-        } catch (\Throwable $th) {
-            return false;
-        }
-    }
-
-
 }
