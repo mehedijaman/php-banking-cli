@@ -10,11 +10,25 @@ class FileDB implements Database{
 
     public function fetch(string $model): array
     {
-        return [];
+        if(file_exists($this->getStoragePath($model))){
+            $serializeData = file_get_contents($this->getStoragePath($model));
+            $unserializeData = unserialize($serializeData);
+            // ERROR:: it returns only the first array.have to fix this 
+            // foreach($unserializeData as $data){
+            //     var_dump($data);
+            // }
+            $data = unserialize(file_get_contents($this->getStoragePath($model)));
+        }
+
+        if(!is_array($data)){
+            return [];
+        }
+
+        return $data;
     }
 
     public function getStoragePath(string $model): string
     {
-        return 'storage/'.$model.'.txt';
+        return 'storage/'.$model.'.db';
     }
 }
